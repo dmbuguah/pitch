@@ -1,23 +1,30 @@
 package com.cdan.pitch.receiver
 
+import android.app.Service
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.util.Log
 import android.widget.Toast
+import android.content.Context.TELEPHONY_SERVICE
+import androidx.core.content.ContextCompat.getSystemService
+import android.telephony.TelephonyManager
+
+
 
 private const val TAG = "PhoneStateReceiver"
 
 class PhoneStateReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
-        StringBuilder().apply {
-            append("Action: ${intent.action}\n")
-            append("URI: ${intent.toUri(Intent.URI_INTENT_SCHEME)}\n")
-            toString().also { log ->
-                Log.d(TAG, log)
-                Toast.makeText(context, log, Toast.LENGTH_LONG).show()
+        val tm = context.getSystemService(Service.TELEPHONY_SERVICE) as TelephonyManager
+        when (tm.callState) {
+
+            TelephonyManager.CALL_STATE_RINGING -> {
+                val phoneNr = intent.getStringExtra("incoming_number")
+                Toast.makeText(context, phoneNr, Toast.LENGTH_LONG).show()
             }
         }
+
     }
 }
